@@ -1,0 +1,467 @@
+---
+title: "R Notebook"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+So my plan of action here is to look at my data using iNEXT. This package provides simple functions to compure and plot sample-size and coverage-based raretaction and extrapolation of species diversity individual based (abundance) data or sampling unit based (incident) data. 
+
+```{r}
+library(iNEXT)
+```
+
+To start, I realize that my data needs to be flipped, so that the data frame reads species as rows and site as columns. 
+
+```{r}
+#transpose data
+tvisbun <- t(data_tvis)
+
+#make dataframe from matrix
+tvisbun <- as.data.frame(tvisbun)
+
+```
+
+Next, each individual site should be its own list. 
+
+********DONT******* Run this - data must have the same number of rows, so I can't get rid of the 0s
+```{r}
+# Make data into one list
+tvisbun <- as.list(tvisbun)
+
+# Make each site into its own list, Sort in decreasing order, and remove zero values
+
+# Avery Picnic Slope
+APS <- (tvisbun$`Avery Picnic Slope`) 
+  APS <- sort(APS, decreasing=TRUE) 
+  APS <- APS[APS!=0]
+  APS <- list(APS)
+
+# Avery Picnic Upper
+APU <- (tvisbun$`Avery Picnic Upper`)
+  APU <- sort(APU, decreasing=TRUE) 
+  APU <- APU[APU!=0]
+  APU <- list(APU)
+ 
+# Back of Baldy Bend   
+BBB <- (tvisbun$`Back of Baldy Bend`) 
+  BBB <- sort(BBB, decreasing=TRUE) 
+  BBB <- BBB[BBB!=0]
+  BBB <- list(BBB)
+
+# Baldy Lunch
+BL <- (tvisbun$`Baldy Lunch`) 
+  BL <- sort(BL, decreasing=TRUE) 
+  BL <- BL[BL!=0]
+  BL <- list(BL)
+ 
+# Bellview Bench 
+BB <- (tvisbun$`Bellview Bench`) 
+  BB <- sort(BB, decreasing=TRUE) 
+  BB <- BB[BB!=0]
+  BB <- list(BB)
+
+#Bellview View
+BV <- (tvisbun$`Bellview View`) 
+  BV <- sort(BV, decreasing=TRUE) 
+  BV <- BV[BV!=0]
+  BV <- list(BV)
+
+#billy's Hilly Lower
+bHL <- (tvisbun$`billy's Hilly Lower`) 
+  bHL <- sort(bHL, decreasing=TRUE) 
+  bHL <- bHL[bHL!=0]
+  bHL <- list(bHL)
+  
+#billy's Hilly Upper
+bHU <- (tvisbun$`billy's Hilly Upper`) 
+  bHU <- sort(bHU, decreasing=TRUE) 
+  bHU <- bHU[bHU!=0]
+  bHU <- list(bHU)
+
+#Emerald Lake Lower
+ELL <- (tvisbun$`Emerald Lake Lower`) 
+  ELL <- sort(ELL, decreasing=TRUE) 
+  ELL <- ELL[ELL!=0]
+  ELL <- list(ELL)
+
+#Emerald Lake Upper
+ELU <- (tvisbun$`Emerald Lake Upper`) 
+  ELU <- sort(ELU, decreasing=TRUE) 
+  ELU <- ELU[ELU!=0]
+  ELU <- list(ELU) 
+
+#End of Gothic Hill 
+EGH <- (tvisbun$`End of Gothic Hill`) 
+  EGH <- sort(EGH, decreasing=TRUE) 
+  EGH <- EGH[EGH!=0]
+  EGH <- list(EGH)
+
+#Kebler Pass
+KP <- (tvisbun$`Kebler Pass`) 
+  KP <- sort(KP, decreasing=TRUE) 
+  KP <- KP[KP!=0]
+  KP <- list(KP)
+  
+#Long Lake Parking Lot 1
+LLP1 <- (tvisbun$`Long Lake Parking Lot 1`) 
+  LLP1 <- sort(LLP1, decreasing=TRUE) 
+  LLP1 <- LLP1[LLP1!=0]
+  LLP1 <- list(LLP1)
+
+#Long Lake Parking Lot 2
+LLP2 <- (tvisbun$`Long Lake Parking Lot 2`) 
+  LLP2 <- sort(LLP2, decreasing=TRUE) 
+  LLP2 <- LLP2[LLP2!=0]
+  LLP2 <- list(LLP2)
+  
+#Long Lake Parking Lot 3
+LLP3 <- (tvisbun$`Long Lake Parking Lot 3`) 
+  LLP3 <- sort(LLP3, decreasing=TRUE) 
+  LLP3 <- LLP3[LLP3!=0]
+  LLP3 <- list(LLP3)
+  
+#Long Lake Parking Lot 4
+LLP4 <- (tvisbun$`Long Lake Parking Lot 4`) 
+  LLP4 <- sort(LLP4, decreasing=TRUE) 
+  LLP4 <- LLP4[LLP4!=0]
+  LLP4 <- list(LLP4)
+  
+# Max Flied Meadow Lower
+MFML <- (tvisbun$`Max Field Meadow Lower`) 
+  MFML <- sort(MFML, decreasing=TRUE) 
+  MFML <- MFML[MFML!=0]
+  MFML <- list(MFML)
+
+# Max Field Meadow Upper
+MFMU <- (tvisbun$`Max Field Meadow Upper`) 
+  MFMU <- sort(MFMU, decreasing=TRUE) 
+  MFMU <- MFMU[MFMU!=0]
+  MFMU <- list(MFMU)
+  
+# Ol' Dusty Road
+ODR <- (tvisbun$`Ol' Dusty Road`) 
+  ODR <- sort(ODR, decreasing=TRUE) 
+  ODR <- ODR[ODR!=0]
+  ODR <- list(ODR)
+  
+# Rosy Point Lower
+RPL <- (tvisbun$`Rosy Point Lower`) 
+  RPL <- sort(RPL, decreasing=TRUE) 
+  RPL<- RPL[RPL!=0]
+  RPL <- list(RPL)
+
+# Rosy Point Upper
+RPU <- (tvisbun$`Rosy Point Upper`) 
+  RPU <- sort(RPU, decreasing=TRUE) 
+  RPU <- RPU[RPU!=0]
+  RPU <- list(RPU)
+
+# Schofield/Vera Falls
+SVF <- (tvisbun$`Schofield/Vera Falls`) 
+  SVF <- sort(SVF, decreasing=TRUE) 
+  SVF <- SVF[SVF!=0]
+  SVF <- list(SVF)
+  
+# Slate River 2
+SR <- (tvisbun$`Slate River 2`) 
+  SR <- sort(SR, decreasing=TRUE) 
+  SR <- SR[SR!=0]
+  SR <- list(SR)
+
+# Up on dat hill
+Udh <- (tvisbun$`Up on dat hill`) 
+  Udh <- sort(Udh, decreasing=TRUE) 
+  Udh <- Udh[Udh!=0]
+  Udh <- list(Udh)
+  
+# Vera Falls
+VF <- (tvisbun$`Vera Falls`) 
+  VF <- sort(VF, decreasing=TRUE) 
+  VF <- VF[VF!=0]
+  VF <- list(VF)
+  
+# Vera Falls 2
+VF2 <- (tvisbun$`Vera Falls 2`) 
+  VF2 <- sort(VF2, decreasing=TRUE) 
+  VF2 <- VF2[VF2!=0]
+  VF2 <- list(VF2)
+
+```
+
+RUN THIS INSTEAD - keeps zeros
+```{r}
+# Make data into one list
+tvisbun <- as.list(tvisbun)
+
+# Make each site into its own list, Sort in decreasing order, and remove zero values
+
+# Avery Picnic Slope
+APS <- (tvisbun$`Avery Picnic Slope`) 
+  APS <- sort(APS, decreasing=TRUE) 
+  APS <- list(APS)
+
+# Avery Picnic Upper
+APU <- (tvisbun$`Avery Picnic Upper`)
+  APU <- sort(APU, decreasing=TRUE) 
+  APU <- list(APU)
+ 
+# Back of Baldy Bend   
+BBB <- (tvisbun$`Back of Baldy Bend`) 
+  BBB <- sort(BBB, decreasing=TRUE) 
+  BBB <- list(BBB)
+
+# Baldy Lunch
+BL <- (tvisbun$`Baldy Lunch`) 
+  BL <- sort(BL, decreasing=TRUE) 
+  BL <- list(BL)
+ 
+# Bellview Bench 
+BB <- (tvisbun$`Bellview Bench`) 
+  BB <- sort(BB, decreasing=TRUE) 
+  BB <- list(BB)
+
+#Bellview View
+BV <- (tvisbun$`Bellview View`) 
+  BV <- sort(BV, decreasing=TRUE) 
+  BV <- list(BV)
+
+#billy's Hilly Lower
+bHL <- (tvisbun$`billy's Hilly Lower`) 
+  bHL <- sort(bHL, decreasing=TRUE) 
+  bHL <- list(bHL)
+  
+#billy's Hilly Upper
+bHU <- (tvisbun$`billy's Hilly Upper`) 
+  bHU <- sort(bHU, decreasing=TRUE) 
+  bHU <- list(bHU)
+
+#Emerald Lake Lower
+ELL <- (tvisbun$`Emerald Lake Lower`) 
+  ELL <- sort(ELL, decreasing=TRUE) 
+  ELL <- list(ELL)
+
+#Emerald Lake Upper
+ELU <- (tvisbun$`Emerald Lake Upper`) 
+  ELU <- sort(ELU, decreasing=TRUE) 
+  ELU <- list(ELU) 
+
+#End of Gothic Hill 
+EGH <- (tvisbun$`End of Gothic Hill`) 
+  EGH <- sort(EGH, decreasing=TRUE) 
+  EGH <- list(EGH)
+
+#Kebler Pass
+KP <- (tvisbun$`Kebler Pass`) 
+  KP <- sort(KP, decreasing=TRUE) 
+  KP <- list(KP)
+  
+#Long Lake Parking Lot 1
+LLP1 <- (tvisbun$`Long Lake Parking Lot 1`) 
+  LLP1 <- sort(LLP1, decreasing=TRUE) 
+  LLP1 <- list(LLP1)
+
+#Long Lake Parking Lot 2
+LLP2 <- (tvisbun$`Long Lake Parking Lot 2`) 
+  LLP2 <- sort(LLP2, decreasing=TRUE) 
+  LLP2 <- list(LLP2)
+  
+#Long Lake Parking Lot 3
+LLP3 <- (tvisbun$`Long Lake Parking Lot 3`) 
+  LLP3 <- sort(LLP3, decreasing=TRUE) 
+  LLP3 <- list(LLP3)
+  
+#Long Lake Parking Lot 4
+LLP4 <- (tvisbun$`Long Lake Parking Lot 4`) 
+  LLP4 <- sort(LLP4, decreasing=TRUE) 
+  LLP4 <- list(LLP4)
+  
+# Max Flied Meadow Lower
+MFML <- (tvisbun$`Max Field Meadow Lower`) 
+  MFML <- sort(MFML, decreasing=TRUE) 
+  MFML <- list(MFML)
+
+# Max Field Meadow Upper
+MFMU <- (tvisbun$`Max Field Meadow Upper`) 
+  MFMU <- sort(MFMU, decreasing=TRUE) 
+  MFMU <- list(MFMU)
+  
+# Ol' Dusty Road
+ODR <- (tvisbun$`Ol' Dusty Road`) 
+  ODR <- sort(ODR, decreasing=TRUE) 
+  ODR <- list(ODR)
+  
+# Rosy Point Lower
+RPL <- (tvisbun$`Rosy Point Lower`) 
+  RPL <- sort(RPL, decreasing=TRUE) 
+  RPL <- list(RPL)
+
+# Rosy Point Upper
+RPU <- (tvisbun$`Rosy Point Upper`) 
+  RPU <- sort(RPU, decreasing=TRUE) 
+  RPU <- list(RPU)
+
+# Schofield/Vera Falls
+SVF <- (tvisbun$`Schofield/Vera Falls`) 
+  SVF <- sort(SVF, decreasing=TRUE) 
+  SVF <- list(SVF)
+  
+# Slate River 2
+SR <- (tvisbun$`Slate River 2`) 
+  SR <- sort(SR, decreasing=TRUE) 
+  SR <- list(SR)
+
+# Up on dat hill
+Udh <- (tvisbun$`Up on dat hill`) 
+  Udh <- sort(Udh, decreasing=TRUE) 
+  Udh <- list(Udh)
+  
+# Vera Falls
+VF <- (tvisbun$`Vera Falls`) 
+  VF <- sort(VF, decreasing=TRUE) 
+  VF <- list(VF)
+  
+# Vera Falls 2
+VF2 <- (tvisbun$`Vera Falls 2`) 
+  VF2 <- sort(VF2, decreasing=TRUE) 
+  VF2 <- list(VF2)
+
+```
+
+
+Dang that took a while! Next is to bind these together into a list which I will use for iNEXT.
+
+```{r}
+# combine lists***
+all <- as.list(c(APS, APU, BB, BBB, bHL, bHU, BL, BV, EGH, ELL, ELU, KP, LLP1, LLP2, LLP3, LLP4, MFML, MFMU, ODR, RPL, RPU, SR, SVF, Udh, VF, VF2))
+
+# remove sites with only 1 species
+two <- as.list(c(APS, APU, BB, BBB, bHL, BL, BV, EGH, ELL, ELU, KP, LLP1, LLP2, LLP3, LLP4, MFML, MFMU, ODR, RPL, RPU, SR, SVF, Udh, VF2))
+
+# make into dataframe
+two <- as.data.frame(two)
+```
+
+
+Now I am going to create the abundance graph.
+*I'm going to use q=1 (Shannon's) for simplicity to begin but will go back later to determine what I should actually use.
+
+```{r}
+out <- iNEXT(two, q=1, datatype="abundance", endpoint=NULL)
+
+# Sample-size-based R/E curves, separating by "order"
+ggiNEXT(out, type=1, facet.var="none") + 
+  xlim(0,100)
+```
+
+
+
+
+
+One of the analyses that I need to run will use the total visitation by species comparing each year. For now I have the 2012 and 2018 data.
+
+First, I need to get the totals from each year:
+
+```{r}
+# make dataframe for 2012
+tvisbun2 <- t(data_tvis) #transpose data
+tvisbun2 <- as.data.frame(tvisbun2)
+tvisbun2 <- tvisbun2[-c(3),]
+
+# sum row totals in new dataframe
+totals12 <- as.data.frame(rowSums(tvisbun2))
+
+#sort in decreasing order
+totals12 <- sort(totals12$`rowSums(tvisbun2)`, decreasing=TRUE)
+
+# make into list
+#totals12 <- list(c(totals12))
+
+# make dataframe for 2018
+tvisbun8 <- t(data_tvis8) #transpose data
+tvisbun8 <- as.data.frame(tvisbun8)
+
+## sum row totals in new dataframe
+totals18 <- as.data.frame(rowSums(tvisbun8))
+
+#sort in decreasing order
+totals18 <- sort(totals18$`rowSums(tvisbun8)`, decreasing=TRUE)
+
+# make into list
+#totals18 <- list(c(totals18))
+
+```
+
+Now I'll merge them into one dataframe
+
+```{r}
+both <- cbind(totals12, totals18)
+```
+
+
+```{r}
+out2 <- iNEXT(both, q=c(0, 1, 2), datatype="abundance", endpoint=NULL)
+
+# Sample-size-based R/E curves, separating by "order""
+ggiNEXT(out2, type=1, facet.var="site") + 
+  xlim(0,175)
+```
+
+
+```{r}
+# Sample-size-based R/E curves, separating by "order""
+ggiNEXT(out2, type=1, facet.var="order") + 
+  xlim(0,175)
+       
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+For the sample-unit based incidence data, the first row should be column totals. 
+
+```{r}
+#create dataframe with row totals
+totals <- as.data.frame(colSums(tvisbun))
+totals <- t(totals)
+
+#bind the totals dataframe with the original dataframe to create incidence data
+tvisinc <- rbind(totals, tvisbun)
+
+```
+
+
+
+How about incidence graph?
+
+```{r}
+out2 <- iNEXT(tvisinc, q=1, datatype="incidence_freq", endpoint=NULL)
+
+ggiNEXT(out2, type=1, facet.var="none")
+```
+
+
+
+
+
+
+
