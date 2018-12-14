@@ -1,0 +1,103 @@
+---
+title: "Method for data expansion"
+author: "Kelly Endres"
+date: "November 27, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+rm(list = ls())
+```
+
+## R Markdown
+
+The goal of this code is to find a way to transform our dataset to account for differences in sampling effort. The idea is to take each observation period and multiply it by the number of observers, randomly assinging each observer a different number of observations. For example, one observation period with 3 observers and 11 observations could be three sets of one observer with 8, 1, and 2 observations respectively. 
+
+An important consideration when completely this work is to prevent selection bias in observations. The first observation will be the largest almost always, and this would produce bias. 
+
+With help from Connor and others, we came up with a method that works, which I then implemented in R.
+
+Function: 
+```{r}
+# make function from previous code
+my.fun <- function(n, s) {
+  s1 <- replicate(n, sample(0:10, 1)) # Choose n values where n is # of observers
+  s2 = sum(s1) # Sum values
+  s3 <- s * s1 # Multiply each value (n) by visitation total (s)
+  s4 <- s3/s2 # Divide each value calculated in s3 by s2
+  s5 <- round(s4)
+  sum(s5)
+  x <- sum(s5)
+  if((x > (s-1)) & (x < (s+1))){ # Only create output matrix if values round to number of observations 
+  matrix(s5)
+  } else # If the output is NULL then rerun function
+    Recall(n, s)
+}
+
+
+```
+
+Here I created a dataframe to practive applying my function. 
+
+```{r}
+# Create practice dataframe
+y <- data.frame("ob" = c(3, 2, 3), "obs" = c(7, 10, 7))
+
+# apply function to dataframe
+mel <- as.data.frame(
+  unlist(
+    (mapply
+     (my.fun, y$ob, y$obs)
+     )))
+
+```
+
+Ok, now that that worked I need to repeat it. These repeats will all need to make up the end dataframe.
+
+```{r}
+# repeat function
+two <- replicate(n = 2, expr = {
+  as.data.frame(unlist((mapply(my.fun, y$ob, y$obs))))
+})
+
+# turn repeats into dataframe
+twodf <- as.data.frame(two)
+```
+
+Now I'll try this on my 2018 data and see what happens. 
+
+```{r}
+#change columns to numeric, not integer
+ipo2018$Observers <- as.numeric(ipo2018$Observers)
+ipo2018$Total.Visits <- as.numeric(ipo2018$Total.Visits)
+
+# apply function to dataframe
+mel1 <- as.data.frame(
+  unlist(
+    (mapply
+     (my.fun, ipo2018$Observers, ipo2018$Total.Visits)
+     )))
+
+## repeat function
+two8 <- replicate(n = 2, expr = {
+  as.data.frame(unlist((mapply(my.fun, ipo2018$Observers, ipo2018$Total.Visits))))
+})
+
+# turn repeats into dataframe
+two8dr <- t(as.data.frame(c(two8)))
+```
+
+
+
+Very cool! Now the problem is that I need to figure out how to keep all the other information together. This is stuff like year, observer (i.e. 1, 2, 3), etc. Absolutely no idea how to make that happen. 
+
+
+Unused code
+# add NAs to make lists of equal length 
+#mel <- lapply(mel, `length<-`, max(lengths(mel)))
+
+# Merge lists into one dataframe
+#mel2 <- t(as.data.frame(mel))
+
+
+
